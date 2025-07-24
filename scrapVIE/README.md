@@ -79,6 +79,8 @@ sudo systemctl enable cron
 ```
 
 #### Option 2 : Avec systemd (plus robuste)
+
+**Configuration initiale :**
 ```bash
 # Créer le service systemd
 sudo nano /etc/systemd/system/scrapvie.service
@@ -94,7 +96,7 @@ After=network.target
 Type=oneshot
 User=lambda
 WorkingDirectory=/home/lambda/scrapVIE
-ExecStart=/usr/bin/python3 main.py --all
+ExecStart=/home/lambda/scrapVIE/venv/bin/python /home/lambda/scrapVIE/main.py --all
 StandardOutput=append:/home/lambda/scrapVIE/scraping.log
 StandardError=append:/home/lambda/scrapVIE/scraping.log
 
@@ -130,6 +132,24 @@ sudo systemctl start scrapvie.timer
 # Vérifier le statut
 sudo systemctl status scrapvie.timer
 sudo systemctl list-timers
+```
+
+**Modification du service existant :**
+```bash
+# Arrêter le service et le timer
+sudo systemctl stop scrapvie.timer scrapvie.service
+
+# Modifier le fichier de service
+sudo nano /etc/systemd/system/scrapvie.service
+
+# Recharger les services systemd
+sudo systemctl daemon-reload
+
+# Redémarrer le timer
+sudo systemctl start scrapvie.timer
+
+# Vérifier le statut
+sudo systemctl status scrapvie.timer
 ```
 
 #### Vérification et logs
