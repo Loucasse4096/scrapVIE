@@ -156,49 +156,38 @@ def scrap_vie_business(debug=False):
         print(f"[DEBUG] Total jobs extraits : {len(jobs)}")
     return jobs
 
-def scrap_societe_generale(debug=False):
-    url = "https://careers.societegenerale.com/search-proxy.php"
+def scrap_orange(debug=False):
+    url = "https://orange.jobs/jobs/v3/offers/search?lang=fr"
     headers = {
-        "accept": "*/*",
-        "accept-language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
-        "authorization-api": "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJpcHhUM1gvWUdxZmFmbmRFM3o5clRTM2xqQ2c9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJkMDZkYzFhNi0xODczLTQ5YWItYTk2OS05ZGJiY2ZhYThmYTkiLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXVkaXRUcmFja2luZ0lkIjoiOGM5NjQxZTMtYzM4ZC00ZjZkLWJkZjQtNDZjODdjY2Q2Zjg5LTIwMzY0NzA0NSIsInN1Ym5hbWUiOiJkMDZkYzFhNi0xODczLTQ5YWItYTk2OS05ZGJiY2ZhYThmYTkiLCJpc3MiOiJodHRwczovL3Nzby5zZ21hcmtldHMuY29tOjQ0My9zZ2Nvbm5lY3Qvb2F1dGgyIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiVFhZdlpVRE42YnF4MGZ1bUk5OUc5dkwtVmQwIiwiY2xpZW50X2lkIjoiZDA2ZGMxYTYtMTg3My00OWFiLWE5NjktOWRiYmNmYWE4ZmE5IiwiYXVkIjoiZDA2ZGMxYTYtMTg3My00OWFiLWE5NjktOWRiYmNmYWE4ZmE5IiwibmJmIjoxNzUzMzU3NTI1LCJncmFudF90eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwic2NvcGUiOlsic2d4QEBvcmlnaW5fbmV0d29ya0BASW50ZXJuZXQiLCJhcGkuY29ycHNyYy0wMDI1Ny52MSJdLCJhdXRoX3RpbWUiOjE3NTMzNTc1MjUsInJlYWxtIjoiLyIsImV4cCI6MTc1MzM1ODEyNSwiaWF0IjoxNzUzMzU3NTI1LCJleHBpcmVzX2luIjo2MDAsImp0aSI6Im9paE1uR1U2SzdhRVpBUHJKMTdxMFNHbHFJWSJ9.fFGB93tGhnSzvdLbfdigNL9tYKd_6yvKTc9l4BjVBhUT-e900Bp_p3DdKs0Ljo0aKG9BNMIoZynONvcVnJLbV2FkjGTryZhFRbTuqoVeYp-44hcWC2VCgp09v76R4BnD9p0Sms1HdJLPHnTTj-U01Lp3p_-husJ-59TEn3iI7lGRDz7IA0S4q4Vc_hAB5a1PBRqhMAcFOwP8BckLya_46NFxaiGXD9yoPQn7Osu21fo3xRQR9PumHccxaSwvNio3n5vHUbu_OBhK6gOKw8sBJjpsu0nFITHa2KIqz4aQXi7AgSSBlar2J1WEMVUG1y8hqW_zo05KXHTRiIsbYoS73A",
-        "cache-control": "no-cache",
-        "content-type": "application/json",
-        "origin": "https://careers.societegenerale.com",
-        "pragma": "no-cache",
-        "priority": "u=1, i",
-        "referer": "https://careers.societegenerale.com/rechercher?refinementList[jobType][0]=COOPERATIVE&refinementList[jobFunction][0]=BJ725",
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "Origin": "https://orange.jobs",
+        "Pragma": "no-cache",
+        "Referer": "https://orange.jobs/jobs/v3/search?keyword=",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest",
         "sec-ch-ua": '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
         "sec-ch-ua-mobile": "?0",
         "sec-ch-ua-platform": '"macOS"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-        "x-proxy-url": "https://api.socgen.com/business-support/it-for-it-support/cognitive-service-knowledge/api/v1/search-profile"
     }
     data = {
-        "profile": "ces_profile_sgcareers",
-        "query": {
-            "advanced": [
-                {
-                    "type": "simple",
-                    "name": "sourcestr6",
-                    "op": "eq",
-                    "value": "job"
-                },
-                {
-                    "type": "multi",
-                    "name": "sourcestr8",
-                    "op": "eq",
-                    "values": ["COOPERATIVE"]
-                }
-            ],
-            "skipCount": 10,
-            "skipFrom": 0
-        },
-        "lang": "fr",
-        "responseType": "SearchResult"
+        "index": "1",
+        "nb": 10000,
+        "latmin": "",
+        "latmax": "",
+        "lngmin": "",
+        "lngmax": "",
+        "carto": "",
+        "prelisteddomain": ["4238"],
+        "contract": ["345"],
+        "domain": [],
+        "place": []
     }
     if debug:
         print(f"[DEBUG] POST {url}")
@@ -211,13 +200,13 @@ def scrap_societe_generale(debug=False):
         print(json.dumps(response.json(), indent=2)[:2000])
         print("\n[DEBUG] --- Fin de l'aperçu de la réponse JSON ---\n")
     jobs = []
-    for job in response.json().get('Result', {}).get('Docs', []):
+    for job in response.json().get('items', []):
         job_obj = {
             'title': job.get('title'),
-            'location': job.get('sourcestr7'),
-            'url': job.get('url1'),
-            'postedOn': job.get('sourcedatetime1'),
-            'ref': job.get('sourcestr4')
+            'location': job.get('fulllocation'),
+            'url': job.get('url'),
+            'postedOn': job.get('pubdate'),
+            'ref': job.get('reference')
         }
         if debug:
             print(f"[DEBUG] Job extrait : {job_obj}")
@@ -259,12 +248,12 @@ def save_jobs(site, jobs, debug=False):
 def main():
     parser = ArgumentParser()
     parser.add_argument('--debug', action='store_true', help='Activer le mode debug')
-    parser.add_argument('--site', type=str, default=None, choices=['airbus', 'thales', 'vie_business', 'societe_generale'], help='Site à scraper (airbus, thales, vie_business ou societe_generale)')
+    parser.add_argument('--site', type=str, default=None, choices=['airbus', 'thales', 'vie_business', 'orange'], help='Site à scraper (airbus, thales, vie_business ou orange)')
     parser.add_argument('--all', action='store_true', help='Scraper tous les sites à la fois')
     args = parser.parse_args()
     debug = args.debug or os.environ.get('DEBUG', '0') == '1'
 
-    sites = ['airbus', 'thales', 'vie_business', 'societe_generale'] if args.all else ([args.site] if args.site else ['airbus'])
+    sites = ['airbus', 'thales', 'vie_business', 'orange'] if args.all else ([args.site] if args.site else ['airbus'])
 
     all_new_jobs = []
     for site in sites:
@@ -275,8 +264,8 @@ def main():
             jobs = scrap_thales(debug=debug)
         elif site == 'vie_business':
             jobs = scrap_vie_business(debug=debug)
-        elif site == 'societe_generale':
-            jobs = scrap_societe_generale(debug=debug)
+        elif site == 'orange':
+            jobs = scrap_orange(debug=debug)
         else:
             print(f"Site non supporté : {site}")
             continue
