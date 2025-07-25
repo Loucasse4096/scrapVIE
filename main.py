@@ -110,10 +110,20 @@ def scrap_vie_business(debug=False):
     url = "https://civiweb-api-prd.azurewebsites.net/api/Offers/search"
     headers = {
         "Accept": "*/*",
+        "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
         "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
         "Origin": "https://mon-vie-via.businessfrance.fr",
+        "Pragma": "no-cache",
         "Referer": "https://mon-vie-via.businessfrance.fr/",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+        "sec-ch-ua": '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"macOS"',
     }
     data = {
         "limit": 50,
@@ -154,6 +164,69 @@ def scrap_vie_business(debug=False):
         jobs.append(job_obj)
     if debug:
         print(f"[DEBUG] Total jobs extraits : {len(jobs)}")
+    return jobs
+
+def scrap_vie_business_with_keywords(keywords, debug=False):
+    """
+    Scrape VIE Business France avec des mots-clés spécifiques
+    """
+    url = "https://civiweb-api-prd.azurewebsites.net/api/Offers/search"
+    headers = {
+        "Accept": "*/*",
+        "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "Origin": "https://mon-vie-via.businessfrance.fr",
+        "Pragma": "no-cache",
+        "Referer": "https://mon-vie-via.businessfrance.fr/",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+        "sec-ch-ua": '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"macOS"',
+    }
+    data = {
+        "limit": 6,
+        "skip": 0,
+        "query": keywords,
+        "activitySectorId": [],
+        "missionsTypesIds": [],
+        "missionsDurations": [],
+        "gerographicZones": [],
+        "countriesIds": [],
+        "studiesLevelId": [],
+        "companiesSizes": [],
+        "specializationsIds": [],
+        "entreprisesIds": [0],
+        "missionStartDate": None
+    }
+    if debug:
+        print(f"[DEBUG] POST {url}")
+        print(f"[DEBUG] Headers: {headers}")
+        print(f"[DEBUG] Data: {data}")
+    response = requests.post(url, headers=headers, json=data)
+    response.raise_for_status()
+    if debug:
+        print("[DEBUG] Réponse JSON brute :\n")
+        print(json.dumps(response.json(), indent=2)[:2000])
+        print("\n[DEBUG] --- Fin de l'aperçu de la réponse JSON ---\n")
+    jobs = []
+    for job in response.json().get('result', []):
+        job_obj = {
+            'title': job.get('missionTitle'),
+            'location': job.get('cityNameEn') or job.get('cityName'),
+            'url': None,  # Pas d'URL directe fournie
+            'postedOn': job.get('creationDate'),
+            'ref': f"{keywords}_{job.get('id')}"  # Préfixe pour éviter les doublons
+        }
+        if debug:
+            print(f"[DEBUG] Job extrait : {job_obj}")
+        jobs.append(job_obj)
+    if debug:
+        print(f"[DEBUG] Total jobs extraits pour '{keywords}': {len(jobs)}")
     return jobs
 
 def scrap_orange(debug=False):
@@ -248,12 +321,12 @@ def save_jobs(site, jobs, debug=False):
 def main():
     parser = ArgumentParser()
     parser.add_argument('--debug', action='store_true', help='Activer le mode debug')
-    parser.add_argument('--site', type=str, default=None, choices=['airbus', 'thales', 'vie_business', 'orange'], help='Site à scraper (airbus, thales, vie_business ou orange)')
+    parser.add_argument('--site', type=str, default=None, choices=['airbus', 'thales', 'vie_business', 'vie_data', 'vie_machine_learning', 'orange'], help='Site à scraper (airbus, thales, vie_business, vie_data, vie_machine_learning ou orange)')
     parser.add_argument('--all', action='store_true', help='Scraper tous les sites à la fois')
     args = parser.parse_args()
     debug = args.debug or os.environ.get('DEBUG', '0') == '1'
 
-    sites = ['airbus', 'thales', 'vie_business', 'orange'] if args.all else ([args.site] if args.site else ['airbus'])
+    sites = ['airbus', 'thales', 'vie_business', 'vie_data', 'vie_machine_learning', 'orange'] if args.all else ([args.site] if args.site else ['airbus'])
 
     all_new_jobs = []
     for site in sites:
@@ -264,6 +337,10 @@ def main():
             jobs = scrap_thales(debug=debug)
         elif site == 'vie_business':
             jobs = scrap_vie_business(debug=debug)
+        elif site == 'vie_data':
+            jobs = scrap_vie_business_with_keywords("data", debug=debug)
+        elif site == 'vie_machine_learning':
+            jobs = scrap_vie_business_with_keywords("Machine learning", debug=debug)
         elif site == 'orange':
             jobs = scrap_orange(debug=debug)
         else:
